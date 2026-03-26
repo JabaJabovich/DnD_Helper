@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>D&D Helper – NPC Generator</title>
+  <!-- Tailwind CDN для быстрой красивой верстки -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <div class="max-w-4xl mx-auto py-8 px-4">
+    <header class="mb-8 flex items-center justify-between">
+      <h1 class="text-3xl font-bold">D&D NPC & Quest Helper</h1>
+      <span class="text-xs text-slate-400">beta</span>
+    </header>
+
+    <section class="mb-6 flex flex-wrap gap-3">
+      <button id="btn-npc"
+              class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 transition">
+        Сгенерировать NPC
+      </button>
+      <!-- Кнопку для квестов добавим позже -->
+      <!-- <button id="btn-quest" class="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500">
+        Сгенерировать квест
+      </button> -->
+    </section>
+
+    <section id="npc-card" class="hidden bg-slate-800/80 border border-slate-700 rounded-lg p-5 shadow-lg">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-2xl font-semibold" id="npc-name"></h2>
+        <span class="text-sm text-slate-400" id="npc-race-role"></span>
+      </div>
+      <p class="text-sm text-slate-300 mb-3" id="npc-traits"></p>
+      <p class="text-base" id="npc-description"></p>
+    </section>
+
+    <section id="error"
+             class="hidden mt-4 bg-red-900/60 border border-red-700 text-red-100 rounded p-3 text-sm">
+    </section>
+  </div>
+
+  <script>
+    const apiBase = window.location.origin; // тот же домен/порт
+
+    const btnNpc = document.getElementById('btn-npc');
+    const card = document.getElementById('npc-card');
+    const errBox = document.getElementById('error');
+
+    const nameEl = document.getElementById('npc-name');
+    const raceRoleEl = document.getElementById('npc-race-role');
+    const traitsEl = document.getElementById('npc-traits');
+    const descEl = document.getElementById('npc-description');
+
+    async function generateNpc() {
+      errBox.classList.add('hidden');
+      btnNpc.disabled = true;
+      btnNpc.textContent = 'Генерирую...';
+
+      try {
+        const res = await fetch(`${apiBase}/api/npc/random?use_ai=true`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const npc = await res.json();
+
+        nameEl.textContent = npc.name;
+        raceRoleEl.textContent = `${npc.race} • ${npc.role}`;
+        traitsEl.textContent = `Характер: ${npc.personality}. Цель: ${npc.goal}. Изъян: ${npc.flaw}.`;
+        descEl.textContent = npc.description || 'Описание недоступно (ИИ сейчас недоступен).';
+
+        card.classList.remove('hidden');
+      } catch (e) {
+        errBox.textContent = 'Ошибка при генерации NPC. Попробуй ещё раз чуть позже.';
+        errBox.classList.remove('hidden');
+      } finally {
+        btnNpc.disabled = false;
+        btnNpc.textContent = 'Сгенерировать NPC';
+      }
+    }
+
+    btnNpc.addEventListener('click', generateNpc);
+  </script>
+</body>
+</html>

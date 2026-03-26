@@ -4,9 +4,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from .models import NPC
 from .npc import generate_raw_npc
 from .ai_client import generate_npc_description
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import pathlib
 
 
 app = FastAPI(title="D&D Companion")
+BASE_DIR = pathlib.Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+
+
+@app.get("/ui", response_class=HTMLResponse)
+def ui_root():
+    with open(BASE_DIR / "static" / "index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
 app.add_middleware(
     CORSMiddleware,
