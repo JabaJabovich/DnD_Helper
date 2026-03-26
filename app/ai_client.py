@@ -12,22 +12,22 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
 def generate_npc_description(npc_data: dict) -> str:
     """
-    npc_data: dict с полями name, race, role, personality, goal, flaw
+    npc_data: dict with fields name, race, role, personality, goal, flaw
     """
     if AI_PROVIDER != "ollama":
         raise RuntimeError(f"Unsupported AI_PROVIDER: {AI_PROVIDER}")
 
     prompt = (
-        "Ты помощник ведущего Dungeons & Dragons. "
-        "ВСЕГДА отвечай ТОЛЬКО на русском языке. "
-        "Напиши 2–4 предложения атмосферного описания этого NPC, "
-        "без игровых правил и чисел, только художественный текст.\n\n"
-        f"Имя: {npc_data['name']}\n"
-        f"Раса: {npc_data['race']}\n"
-        f"Роль: {npc_data['role']}\n"
-        f"Характер: {npc_data['personality']}\n"
-        f"Цель: {npc_data['goal']}\n"
-        f"Изъян: {npc_data['flaw']}"
+        "You are an assistant helping a Dungeon Master in a fantasy tabletop RPG.\n"
+        "Write 2–4 sentences of atmospheric, narrative description of this NPC in English.\n"
+        "Do not mention game rules or numbers, focus only on mood, personality and hints of backstory.\n\n"
+        f"Name: {npc_data['name']}\n"
+        f"Race: {npc_data['race']}\n"
+        f"Role: {npc_data['role']}\n"
+        f"Personality: {npc_data['personality']}\n"
+        f"Goal: {npc_data['goal']}\n"
+        f"Flaw: {npc_data['flaw']}\n\n"
+        "Answer with one coherent paragraph in English."
     )
 
     url = f"{OLLAMA_BASE_URL}/v1/chat/completions"
