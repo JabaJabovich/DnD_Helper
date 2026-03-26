@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .models import NPC
 from .npc import generate_raw_npc
+from .ai_client import generate_npc_description
+
 
 app = FastAPI(title="D&D Companion")
 
@@ -21,6 +23,11 @@ def root():
 
 
 @app.get("/api/npc/random", response_model=NPC)
-def api_random_npc():
+def api_random_npc(use_ai: bool = True):
     npc = generate_raw_npc()
+    if use_ai:
+        try:
+            npc.description = generate_npc_description(npc.dict())
+        except Exception:
+            npc.description = None
     return npc
